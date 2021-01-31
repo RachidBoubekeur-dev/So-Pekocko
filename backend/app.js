@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParse = require('body-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
@@ -15,7 +16,9 @@ mongoose.connect('mongodb+srv://RachidBoubekeur:RachidBK@cluster0.qh3jn.mongodb.
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+app.use(bodyParse.urlencoded({extended: true}));
 app.use(bodyParse.json());
+app.use(mongoSanitize());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
