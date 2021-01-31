@@ -2,7 +2,56 @@ const Sauce = require('../models/sauce');
 const fs = require('fs');
 
 exports.like = (req, res, next) => {
+    if (req.body.like === 1) {
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                sauce.usersLiked.push(req.body.userId);
+                Sauce.updateOne({ _id: req.params.id }, {
+                    usersLiked: sauce.usersLiked,
+                    likes: sauce.usersLiked.length,
+                    _id: req.params.id
+                })
+                    .then(() => res.status(200).json({ ...req.body }))
+                    .catch(error => res.status(400).json({ error }));
+            });
+    } else if (req.body.like === 0) {
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                for (let i = 0; i < sauce.usersDisliked.length; i++) {
+                    if (req.body.userId === sauce.usersDisliked[i]) {
+                        sauce.usersDisliked.splice(i, 1);
+                    }
+                }
 
+                for (let i = 0; i < sauce.usersLiked.length; i++) {
+                    if (req.body.userId === sauce.usersLiked[i]) {
+                        sauce.usersLiked.splice(i, 1);
+                    }
+                }
+
+                Sauce.updateOne({ _id: req.params.id }, {
+                    usersLiked: sauce.usersLiked,
+                    usersDisliked: sauce.usersDisliked,
+                    likes: sauce.usersLiked.length,
+                    dislikes: sauce.usersDisliked.length,
+                    _id: req.params.id
+                })
+                    .then(() => res.status(200).json({ ...req.body }))
+                    .catch(error => res.status(400).json({ error }));
+            });
+    } else if (req.body.like === -1) {
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                sauce.usersDisliked.push(req.body.userId);
+                Sauce.updateOne({ _id: req.params.id }, {
+                    usersDisliked: sauce.usersDisliked,
+                    dislikes: sauce.usersDisliked.length,
+                    _id: req.params.id
+                })
+                    .then(() => res.status(200).json({ ...req.body }))
+                    .catch(error => res.status(400).json({ error }));
+            });
+    }
 };
 
 exports.createSauce = (req, res, next) => {
@@ -44,7 +93,7 @@ exports.updateSauce = (req, res, next) => {
         Sauce.findOne({ _id: req.params.id })
             .then(sauce => {
                 const filename = sauce.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {});
+                fs.unlink(`images/${filename}`, () => { });
             });
     }
 
