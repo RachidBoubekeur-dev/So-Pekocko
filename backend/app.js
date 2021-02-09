@@ -18,14 +18,19 @@ mongoose.connect('mongodb+srv://RachidBoubekeur:SXXjV8EtAhYtZMGf@cluster0.qh3jn.
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+// Limite les demandes répétées à  l'API 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100 // limit each IP to 100 requests per windowMs
 });
 
 app.use(limiter);
+
+// Analyser les corps de requête entrants dans un middleware
 app.use(bodyParse.urlencoded({ extended: true }));
 app.use(bodyParse.json());
+
+// Empêcher l'injection d'opérateur MongoDB
 app.use(mongoSanitize());
 
 app.use((req, res, next) => {
@@ -35,6 +40,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// Sécurise en définissant divers en-têtes HTTP
 app.use(helmet());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));

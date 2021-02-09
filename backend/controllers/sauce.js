@@ -2,6 +2,7 @@ const Sauce = require('../models/sauce');
 const fs = require('fs');
 
 exports.like = (req, res, next) => {
+    // Si l'utilisateur aime la sauce
     if (req.body.like === 1) {
         Sauce.findOne({ _id: req.params.id })
             .then(sauce => {
@@ -15,6 +16,7 @@ exports.like = (req, res, next) => {
                     .catch(error => res.status(400).json({ error }));
             });
     } else if (req.body.like === 0) {
+        // Si l'utilisateur retire s'on avis
         Sauce.findOne({ _id: req.params.id })
             .then(sauce => {
                 for (let i = 0; i < sauce.usersDisliked.length; i++) {
@@ -40,6 +42,7 @@ exports.like = (req, res, next) => {
                     .catch(error => res.status(400).json({ error }));
             });
     } else if (req.body.like === -1) {
+        // Si l'utilisateur n'aime pas la sauce
         Sauce.findOne({ _id: req.params.id })
             .then(sauce => {
                 sauce.usersDisliked.push(req.body.userId);

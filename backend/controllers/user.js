@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 exports.signup = (req, res, next) => {
+    // Cryptage de l'email avec cryptoJS HmacSHA512
     let hashEmail = cryptoJS.HmacSHA512(req.body.email, 'RANDOM_SECRET_EMAIL').toString();
+    // Cryptage du mot de passe avec bcrypt
     bcrypt.hash(req.body.password, 10)
         .then(hashPassword => {
             const user = new User({
@@ -19,12 +21,14 @@ exports.signup = (req, res, next) => {
 }
 
 exports.login = (req, res, next) => {
+    // Cryptage de l'email avec cryptoJS HmacSHA512
     let hashEmail = cryptoJS.HmacSHA512(req.body.email, 'RANDOM_SECRET_EMAIL').toString();
     User.findOne({ email: hashEmail })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé !' });
             }
+            // On compare le mot de passe envoyer avec celui enregistré
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
