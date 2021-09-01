@@ -49,4 +49,4 @@ The project consists of creating a secure API for a gastronomic reviews applicat
 
 4. In the backend folder once all the dependencies are installed start the server with `node server`.
 
-5. In the frontend folder once all the dependencies are installed start the server with `ng serve`.
+5. In the frontend folder once all the dependencies are installed start the server with `npm start`.
